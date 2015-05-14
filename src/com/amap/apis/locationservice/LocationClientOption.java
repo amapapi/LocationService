@@ -3,6 +3,7 @@ package com.amap.apis.locationservice;
 import android.location.LocationManager;
 
 
+
 import com.amap.api.location.LocationProviderProxy;
 
 //TODO 设置默认状态
@@ -97,7 +98,35 @@ public class LocationClientOption {
 		return locationType;
 	}
 
-	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (mIsOpenGPS ? 1231 : 1237);
+		result = prime * result
+				+ ((mLocationMode == null) ? 0 : mLocationMode.hashCode());
+		result = prime * result + mTimeInterval;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LocationClientOption other = (LocationClientOption) obj;
+		if (mIsOpenGPS != other.mIsOpenGPS)
+			return false;
+		if (mLocationMode != other.mLocationMode)
+			return false;
+		if (mTimeInterval != other.mTimeInterval)
+			return false;
+		return true;
+	}
+	 
 	
 	// ------------------------------------修改分割线---------------------------------
 
@@ -108,9 +137,9 @@ public class LocationClientOption {
 //		public void setNeedDeviceDirect(boolean isNeedDeviceDirect) {
 //			mIsNeedDeviceDirect = isNeedDeviceDirect;
 //		}
-	boolean equals(LocationClientOption opt) {
-		return false;
-	}
+
+
+
 
 	public String getAddrType() {
 		return null;
@@ -121,16 +150,16 @@ public class LocationClientOption {
 	}
 
 	// 设置是否进行异常捕捉
-	public void setIgnoreCacheException(boolean cacheException) {
+	  void setIgnoreCacheException(boolean cacheException) {
 
 	}
 
 	// 设置是否退出定位进程
-	public void setIgnoreKillProcess(boolean killProcess) {
+	  void setIgnoreKillProcess(boolean killProcess) {
 
 	}
 
-	public void setLocationNotify(boolean notify) {
+	  void setLocationNotify(boolean notify) {
 
 	}
 

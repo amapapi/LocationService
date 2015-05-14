@@ -26,10 +26,8 @@ import com.amap.api.location.LocationProviderProxy;
 public class LocationClient {
 
 	private Context mContext;
-
-	private LocationClientOption mLocationClientOption;
-
-	// private GDLocationListener mGDLocationListener;
+    //默认的定位参数
+	private LocationClientOption mLocationClientOption=new LocationClientOption();
 
 	private ClientHandler mClientHandler;
 
@@ -37,98 +35,11 @@ public class LocationClient {
 
 	private Messenger mClientMessenger;
 
-	private   ServiceConnection mServiceConnection;
+	private ServiceConnection mServiceConnection;
 
 	private volatile boolean mIsStarted = false;
 
 	private ArrayList<GDLocationListener> mlocationListeners = new ArrayList<GDLocationListener>();
-
-	private static class ClientServiceConnection implements ServiceConnection {
-		private LocationClient mLocationClient;
-
-		ClientServiceConnection(LocationClient locationClient) {
-			mLocationClient = locationClient;
-
-		}
-
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			
-			mLocationClient.mServerMessenger = new Messenger(service);
-			//第一次binder之后，开启定位
-			Message message = new Message();
-			message.what = LocationBackGroundService.START_LOCATE;
-			Bundle bundle = message.getData();
-			bundle.putString(LocationBackGroundService.TYPE_KEY,
-					mLocationClient.mLocationClientOption.getlocationType());
-
-			bundle.putLong(LocationBackGroundService.INTERVAL_KEY,
-					mLocationClient.mLocationClientOption.getScanSpan());
-			bundle.putFloat(LocationBackGroundService.DISTANCE_KEY, 0);
-
-			bundle.putBoolean(LocationBackGroundService.GPS_KEY,
-					mLocationClient.mLocationClientOption.isOpenGps());
-			message.setData(bundle);
-			message.replyTo = mLocationClient.mClientMessenger;
-			try {
-				mLocationClient.mServerMessenger.send(message);
-			} catch (RemoteException e) {
- 
-				e.printStackTrace();
-
-			}
-
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-		
-
-		}
-
-	}
-
-	/**  
-	 * 处理后台service的回调
-	 */
-	private static class ClientHandler extends Handler {
-		LocationClient mLocationClient;
-
-		private ClientHandler(Looper looper, LocationClient locationClient) {
-			super(looper);
-			mLocationClient = locationClient;
-			Looper.prepare();
-		}
-
-		public ClientHandler(LocationClient locationClient) {
-			super();
-			mLocationClient = locationClient;
-		}
-
-		public void handleMessage(Message message) {
-
-			switch(message.what){
-			case LocationBackGroundService.ON_LOCATION:
-			Bundle data = message.getData();
-			data.setClassLoader(GDLocation.class.getClassLoader());
-			Parcelable parcel = data
-					.getParcelable(LocationBackGroundService.LOCATION_KEY);
-			GDLocation gdLocation = (GDLocation) parcel;
-			mLocationClient.onLocation(gdLocation);
-			break;
-			case LocationBackGroundService.ON_STOP:
-        	break;
-			}
-		}
-
-	}
-
-	// TODO 需要仔细考虑下是不是 需要同步 
-	private synchronized void onLocation(GDLocation gdLocation) {
-		for (GDLocationListener gdLocationListener : mlocationListeners) {
-			gdLocationListener.onReceiveLocation(gdLocation);
-		}
-	}
 
 	/**
 	 * 构造函数
@@ -160,9 +71,9 @@ public class LocationClient {
 	/**
 	 * 启动定位
 	 */
-	public   void start() {
+	public void start() {
 		if (!mIsStarted) {
-			mIsStarted = true;	
+			mIsStarted = true;
 			mServiceConnection = new ClientServiceConnection(this);
 			Intent intent = new Intent(mContext,
 					LocationBackGroundService.class);
@@ -197,18 +108,18 @@ public class LocationClient {
 	/**
 	 * 停止定位，会unbinder后台运行的service
 	 */
-	public   void stop() {
+	public void stop() {
 		if (mIsStarted) {
 			mIsStarted = false;
 			Message message = new Message();
 			message.what = LocationBackGroundService.STOP_LOCATE;
-			message.replyTo=mClientMessenger;
+			message.replyTo = mClientMessenger;
 			try {
 				mServerMessenger.send(message);
 			} catch (RemoteException e) {
 				e.printStackTrace();
-			}		 
-	
+			}
+
 			mContext.unbindService(mServiceConnection);
 		}
 	}
@@ -235,7 +146,7 @@ public class LocationClient {
 		if (!mlocationListeners.contains(gdLocationListener)) {
 			mlocationListeners.add(gdLocationListener);
 		}
-	
+
 	}
 
 	/**
@@ -244,10 +155,13 @@ public class LocationClient {
 	public synchronized void unRegisterLocationListener(
 			GDLocationListener listener) {
 		mlocationListeners.remove(listener);
-		 
+
 	}
 
-	// 同步定位，返回最近一次定位结果
+	/**
+	 * 返回最近一次的定位结果，如果app从未进行定位或定位成功，返回null
+	 * 
+	 */
 	public GDLocation getLastKnownLocation() {
 		AMapLocation gpsLocation = LocationManagerProxy.getInstance(mContext)
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -274,6 +188,92 @@ public class LocationClient {
 		gdLocation.setAMapLocaion(lastLocation);
 
 		return gdLocation;
+	}
+
+	private static class ClientServiceConnection implements ServiceConnection {
+		private LocationClient mLocationClient;
+
+		ClientServiceConnection(LocationClient locationClient) {
+			mLocationClient = locationClient;
+
+		}
+
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+
+			mLocationClient.mServerMessenger = new Messenger(service);
+			// 第一次binder之后，开启定位
+			Message message = new Message();
+			message.what = LocationBackGroundService.START_LOCATE;
+			Bundle bundle = message.getData();
+			bundle.putString(LocationBackGroundService.TYPE_KEY,
+					mLocationClient.mLocationClientOption.getlocationType());
+
+			bundle.putLong(LocationBackGroundService.INTERVAL_KEY,
+					mLocationClient.mLocationClientOption.getScanSpan());
+			bundle.putFloat(LocationBackGroundService.DISTANCE_KEY, 0);
+
+			bundle.putBoolean(LocationBackGroundService.GPS_KEY,
+					mLocationClient.mLocationClientOption.isOpenGps());
+			message.setData(bundle);
+			message.replyTo = mLocationClient.mClientMessenger;
+			try {
+				mLocationClient.mServerMessenger.send(message);
+			} catch (RemoteException e) {
+
+				e.printStackTrace();
+
+			}
+
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+
+		}
+
+	}
+
+	/**
+	 * 处理后台service的回调
+	 */
+	private static class ClientHandler extends Handler {
+		LocationClient mLocationClient;
+
+		private ClientHandler(Looper looper, LocationClient locationClient) {
+			super(looper);
+			mLocationClient = locationClient;
+			Looper.prepare();
+		}
+
+		public ClientHandler(LocationClient locationClient) {
+			super();
+			mLocationClient = locationClient;
+		}
+
+		public void handleMessage(Message message) {
+
+			switch (message.what) {
+			case LocationBackGroundService.ON_LOCATION:
+				Bundle data = message.getData();
+				data.setClassLoader(GDLocation.class.getClassLoader());
+				Parcelable parcel = data
+						.getParcelable(LocationBackGroundService.LOCATION_KEY);
+				GDLocation gdLocation = (GDLocation) parcel;
+				mLocationClient.onLocation(gdLocation);
+				break;
+			case LocationBackGroundService.ON_STOP:
+				break;
+			}
+		}
+
+	}
+
+	// TODO 需要仔细考虑下是不是 需要同步
+	private synchronized void onLocation(GDLocation gdLocation) {
+		for (GDLocationListener gdLocationListener : mlocationListeners) {
+			gdLocationListener.onReceiveLocation(gdLocation);
+		}
 	}
 
 	// -----------------------------修改分割线---------------------------------
@@ -310,7 +310,7 @@ public class LocationClient {
 	// int reportErrorWithInfo(com.baidu.location.BDErrorReport err) {
 	//
 	// }
-	
+
 	// 请求定位，异步返回，结果在locationListener中获取.
 	int requestLocation() {
 		return 0;

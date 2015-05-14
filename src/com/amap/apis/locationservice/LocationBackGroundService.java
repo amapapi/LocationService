@@ -66,11 +66,13 @@ public class LocationBackGroundService extends Service implements
 
 	private ConcurrentHashMap<String, PendingIntent> mGeofences = new ConcurrentHashMap<String, PendingIntent>();
 
-	private Messenger mClientMessenger;
+	//private Messenger mClientMessenger;
 
 	private ArrayList<Messenger> mClientMessengers = new ArrayList<Messenger>();
 
 	private Messenger mGeofenceClientMessenger;
+	
+	private boolean mIsFirstStart=true;
 	
  
 
@@ -83,17 +85,18 @@ public class LocationBackGroundService extends Service implements
 				long timeInterval = bundle.getLong(INTERVAL_KEY);
 				float distance = bundle.getFloat(DISTANCE_KEY);
 				boolean isGPS = bundle.getBoolean(GPS_KEY);
-				mClientMessenger = message.replyTo;
-				if (!mClientMessengers.contains(mClientMessenger)) {
-					mClientMessengers.add(mClientMessenger);
+				Messenger clientMessenger = message.replyTo;
+				if (!mClientMessengers.contains(clientMessenger)) {
+					mClientMessengers.add(clientMessenger);
 				}
 				startLocate(locationType, timeInterval, distance, isGPS);
 				break;
 			case STOP_LOCATE:
-				mClientMessenger = message.replyTo;
+				Messenger stopClientMessenger = message.replyTo;
 				
-				mClientMessengers.remove(mClientMessenger);		
-				stopLocate(mClientMessenger);
+				mClientMessengers.remove(stopClientMessenger);		
+				stopLocate(stopClientMessenger);
+				
 				break;
 			case ADD_GEOFENCE:
 				Bundle geoFenceBundle = message.getData();
@@ -124,11 +127,16 @@ public class LocationBackGroundService extends Service implements
 
 	private void startLocate(String locationType, long interval,
 			float distance, boolean isGPS) {
+		if(mIsFirstStart)
+		{
 		LocationManagerProxy.getInstance(getApplicationContext()).setGpsEnable(
 				isGPS);
+		
 		LocationManagerProxy.getInstance(getApplicationContext())
 				.requestLocationData(locationType, interval, 0, this);
-
+		mIsFirstStart=false;
+		}
+		
 	}
 
 	private void stopLocate(Messenger messenger) {
@@ -252,12 +260,10 @@ public class LocationBackGroundService extends Service implements
 
 	@Override
 	public void onLocationChanged(AMapLocation amapLocation) {
-		//Log.i("yiyi.qi", "-------Location Changed-------");
 		if (amapLocation != null
 				&& amapLocation.getAMapException().getErrorCode() == 0) {
 			GDLocation gdLocation = new GDLocation();
-			gdLocation.setAMapLocaion(amapLocation);
-			if (mClientMessenger != null) {
+			gdLocation.setAMapLocaion(amapLocation);	 
 				Message message = new Message();
 				message.what=ON_LOCATION;
 				Bundle bundle = new Bundle();
@@ -268,11 +274,12 @@ public class LocationBackGroundService extends Service implements
 						clientMessenger.send(message);
 					}
 					
+					Log.i("yiyi.qi", "size is "+mClientMessengers.size());
 				
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
-			}
+			 
 			// todo回调
 		} else {
 			Log.i("yiyi.qi", "it has exception"

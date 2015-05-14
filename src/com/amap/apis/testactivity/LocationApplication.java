@@ -32,15 +32,15 @@ public class LocationApplication extends Application {
 		mLocationClient.registerLocationListener(mMyLocationListener);
 	//	mGeofenceClient = new GeofenceClient(getApplicationContext());
 		
-		mLocationClient.registerLocationListener(new GDLocationListener() {
-			
-			@Override
-			public void onReceiveLocation(GDLocation location) {
-				
-				// Log.i("yiyi.qi", "first is "+location.getAddrStr());
-				
-			}
-		});
+//		mLocationClient.registerLocationListener(new GDLocationListener() {
+//			
+//			@Override
+//			public void onReceiveLocation(GDLocation location) {
+//				
+//				// Log.i("yiyi.qi", "first is "+location.getAddrStr());
+//				
+//			}
+//		});
 		
 		
 		mVibrator =(Vibrator)getApplicationContext().getSystemService(Service.VIBRATOR_SERVICE);

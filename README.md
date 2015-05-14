@@ -1,0 +1,2 @@
+# LocationService
+使用高德地图android定位sdk进行封装，以remote service方式提供定位功能

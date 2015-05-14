@@ -18,6 +18,7 @@ mLocationClient = new LocationClient(getApplicationContext());
 ``` 
 
 * 设置定位监听
+``` java
 	GDLocationListener gdLocationListener = new GDLocationListener() {
 
 			@Override
@@ -40,8 +41,13 @@ mLocationClient = new LocationClient(getApplicationContext());
 		};
 
 		mLocationClient.registerLocationListener(gdLocationListener);
+``` 	
 * 开始定位
+``` java
 	//开启定位
 	mLocationClient.start();	
+``` 
 * 停止定位
+``` java
 mLocationClient.stop();	
+``` 

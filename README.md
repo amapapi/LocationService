@@ -2,12 +2,12 @@
 使用高德地图android定位sdk进行封装，以remote service方式提供定位功能
 ##定位功能
 
-*实例化定位Client
+* 实例化定位Client
 ``` java
 mLocationClient = new LocationClient(getApplicationContext());
 ``` 
 
-*设置定位参数
+* 设置定位参数
 ``` java
 	    LocationClientOption locationOption = new LocationClientOption();
 		//设置定位间隔
@@ -17,7 +17,7 @@ mLocationClient = new LocationClient(getApplicationContext());
 		mLocationClient.setLocOption(locationOption);
 ``` 
 
-*设置定位监听
+* 设置定位监听
 	GDLocationListener gdLocationListener = new GDLocationListener() {
 
 			@Override
@@ -40,8 +40,8 @@ mLocationClient = new LocationClient(getApplicationContext());
 		};
 
 		mLocationClient.registerLocationListener(gdLocationListener);
-*开始定位
+* 开始定位
 	//开启定位
 	mLocationClient.start();	
-*停止定位
+* 停止定位
 mLocationClient.stop();	

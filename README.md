@@ -102,3 +102,5 @@ mGeofenceClient.stop();
 ##注意事项
 
 - LocationClient与GeofenceClient的start()方法会启动remote service，因此注意在合适的业务场景和生命周期中调用相对的stop()方法停止后台的定位进程
+- 设置LocationClient的LocationClientOption时，最终定位会以第一个最先设置的参数生效
+

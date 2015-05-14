@@ -51,3 +51,54 @@ mLocationClient = new LocationClient(getApplicationContext());
 ``` java
 mLocationClient.stop();	
 ``` 
+##地理围栏功能
+
+* 实例化地理围栏Client
+``` java
+mGeofenceClient=new GeofenceClient(getApplicationContext());
+```
+
+* 设置地理围栏监听
+``` java
+	//设置地理围栏的监听
+		mGeofenceClient.registerGeofenceTriggerListener(new OnGeofenceTriggerListener() {
+			
+			@Override
+			public void onGeofenceTrigger(String geofenceID) {
+				
+			 Log.i("location", "in the geofence"+geofenceID);
+				
+			}
+			
+			@Override
+			public void onGeofenceExit(String geofenceID) {
+				
+				 Log.i("location", "out of the geofence"+geofenceID); 
+				
+			}
+		});
+```
+
+* 添加地理围栏
+``` java
+	//创建地理围栏，设置地理围栏id,范围和有效时间
+			GDGeofence gdGeofence=new GDGeofence.Builder().
+			setGeofenceId("testGeofence")
+			.setCircularRegion(116.480829, 39.989614, 1000).setExpirationDruation(1000*60)
+			.build();
+			//添加地理围栏，注意同一个地理围栏id只能添加一次
+			mGeofenceClient.addGDGeofence(gdGeofence, new OnAddGDGeofencesResultListener() {
+```
+
+* 开启地理围栏扫描
+
+``` java
+mGeofenceClient.start();
+```
+* 停止地理围栏扫描
+``` java
+mGeofenceClient.stop();
+```
+##注意事项
+
+- LocationClient与GeofenceClient的start()方法会启动remote service，因此注意在合适的业务场景和生命周期中调用相对的stop()方法停止后台的定位进程

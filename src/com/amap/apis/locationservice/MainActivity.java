@@ -3,12 +3,14 @@ package com.amap.apis.locationservice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.amap.apis.locationservice.GeofenceClient.OnGeofenceTriggerListener;
 import com.amap.apis.testactivity.GeoFenceActivity;
 import com.amap.apis.testactivity.LocationActivity;
 import com.amap.location.demo.R;
@@ -34,22 +36,25 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 
 //		mGeofenceClient=new GeofenceClient(getApplicationContext());
 //		
-//		mGeofenceClient.registerGeofenceTriggerListener(new OnGeofenceTriggerListener() {
-//			
-//			@Override
-//			public void onGeofenceTrigger(String geofenceID) {
-//				
-//			 Log.i("yiyi.qi", "in the geofence"+geofenceID);
-//				
-//			}
-//			
-//			@Override
-//			public void onGeofenceExit(String geofenceID) {
-//				
-//				 Log.i("yiyi.qi", "out of the geofence"+geofenceID); 
-//				
-//			}
-//		});
+		//设置地理围栏的监听
+		mGeofenceClient.registerGeofenceTriggerListener(new OnGeofenceTriggerListener() {
+			
+			@Override
+			public void onGeofenceTrigger(String geofenceID) {
+				
+			 Log.i("location", "in the geofence"+geofenceID);
+				
+			}
+			
+			@Override
+			public void onGeofenceExit(String geofenceID) {
+				
+				 Log.i("location", "out of the geofence"+geofenceID); 
+				
+			}
+		});
+		
+		mGeofenceClient.start();
 //		
 //		mLocationClient = new LocationClient(getApplicationContext());
 //		GDLocationListener gdLocationListener = new GDLocationListener() {
@@ -82,7 +87,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 //		locationOption.setLocationMode(LocationMode.Battery_Saving);
 //		
 //		mLocationClient.setLocOption(locationOption);
-//		mGeofenceClient.start();
+//
 	}
 
 	protected void onStop() {
@@ -115,13 +120,13 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 		case R.id.start_button:
 
 	 
-//			GDGeofence gdGeofence=new GDGeofence.Builder().
-//			setGeofenceId("testGeofence")
-//			.setCircularRegion(116.480829, 39.989614, 1000).setExpirationDruation(1000*60)
-//			.build();
-//			
-//			
-//			mGeofenceClient.addGDGeofence(gdGeofence, new OnAddGDGeofencesResultListener() {
+			//创建地理围栏，设置地理围栏id,范围和有效时间
+			GDGeofence gdGeofence=new GDGeofence.Builder().
+			setGeofenceId("testGeofence")
+			.setCircularRegion(116.480829, 39.989614, 1000).setExpirationDruation(1000*60)
+			.build();
+			//添加地理围栏，注意同一个地理围栏id只能添加一次
+			mGeofenceClient.addGDGeofence(gdGeofence, new OnAddGDGeofencesResultListener() {
 //				
 //				@Override
 //				public void onAddGDGeofencesResult(int statusCode, String geofenceID) {

@@ -52,11 +52,11 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 //		});
 //		
 //		mLocationClient = new LocationClient(getApplicationContext());
-//		GDLocationListener listener = new GDLocationListener() {
+//		GDLocationListener gdLocationListener = new GDLocationListener() {
 //
 //			@Override
 //			public void onReceiveLocation(GDLocation location) {
-//				Log.i("yiyi.qi",
+//				Log.i("location",
 //						 
 //						
 //						location.getAddrStr() + "  " + location.getCity()
@@ -73,12 +73,15 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 //			}
 //		};
 //
-//		mLocationClient.registerLocationListener(listener);
+//		mLocationClient.registerLocationListener(gdLocationListener);
 //
-//		LocationClientOption option = new LocationClientOption();
-//		option.setScanSpan(2000);
-//		option.setLocationMode(LocationMode.Battery_Saving);
-//		mLocationClient.setLocOption(option);
+//		LocationClientOption locationOption = new LocationClientOption();
+//		//设置定位间隔
+//		locationOption.setScanSpan(2000);
+//		//设置定位模式，其他模式见LocationMode
+//		locationOption.setLocationMode(LocationMode.Battery_Saving);
+//		
+//		mLocationClient.setLocOption(locationOption);
 //		mGeofenceClient.start();
 	}
 
@@ -159,7 +162,8 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 //							});	
 					
 
-			//mLocationClient.start();
+			//开启定位
+			mLocationClient.start();
 			Intent intent=new Intent(MainActivity.this,LocationActivity.class);
 			startActivity(intent);
 			

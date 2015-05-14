@@ -57,6 +57,11 @@ public class LocationClientOption {
 		return mTimeInterval;
 	}
 
+	/**  
+	 * Battery_Saving：省电模式，主要使用基站和网络定位
+	 * Device_Sensors：仅使用系统的gps设备进行定位
+	 * Hight_Accuracy：高精度模式会采用gps加基站网络定位方式进行混合定位，优先选取精度高的gps>wifi>基站进行定位
+	 */
 	public static enum LocationMode {
 
 		Battery_Saving(battery_saving), Device_Sensors(device_sensors), Hight_Accuracy(

@@ -57,6 +57,8 @@ public class LocationActivity extends Activity {
 		option1.setLocationMode(LocationMode.Battery_Saving);
 		mLocationClient1.setLocOption(option1);
 
+		
+		 
 		mLocationClient1.registerLocationListener(new GDLocationListener() {
 
 			@Override

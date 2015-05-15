@@ -16,20 +16,20 @@
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" /> 
     <uses-permission android:name="android.permission.WRITE_SETTINGS" /> 
-``` 
+```   
    2：配置所需key  
 ``` java   
      <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="您申请的key" />
-```
+```  
    3：配置定位service  
 ``` java     
      <service 
             android:process=":remote"
             android:name="com.amap.apis.locationservice.LocationBackGroundService">
-```
-完成以上操作后可以进行定位的开发			
+```  
+  完成以上操作后可以进行定位的开发			
 
 ##定位功能
 * 实例化定位Client

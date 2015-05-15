@@ -1,7 +1,10 @@
 # LocationService
 使用高德地图android定位sdk进行封装，以remote service方式提供定位功能
+
 ##配置工程
+
 - 高德lbs官网申请key [申请地址](http://lbs.amap.com/console/)
+
 - 在mainfest进行一下配置  
 
 1：配置定位所需权限  
@@ -141,6 +144,8 @@ mGeofenceClient.stop();
 ##注意事项
 
 - LocationClient与GeofenceClient的start()方法会启动remote service，因此注意在合适的业务场景和生命周期中调用相对的stop()方法停止后台的定位进程  
+
 - 设置LocationClient的LocationClientOption时，最终定位会以第一个最先设置的参数生效  
+
 - 目前地理围栏支持单个listener的回调，即已设置的最后一个listener进行回调，如果有类似定位LocationClient多个listener回调需求，后续会增加此功能的支持  
 

@@ -100,11 +100,12 @@ public class GeoFenceActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				
+				if(getIDList.size()>0){
 				List<String> fences= new ArrayList<String>();
-				fences.add(geoID.getText().toString());
+				fences.add(getIDList.get(getIDList.size()-1));
 				mGeofenceClient.removeGDGeofences(fences, new RemoveFenceListener());
 			}
+				}
 		});
 	}
 	

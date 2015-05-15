@@ -27,7 +27,7 @@ import com.amap.location.demo.R;
  
 
 public class GeoFenceActivity extends Activity {
-	private LocationClient mLocationClient;
+ 
 	private GeofenceClient mGeofenceClient;
 	private AddGeofenceListener listener;
 	private Button addGeoFence, removeGeoFence;
@@ -43,8 +43,8 @@ public class GeoFenceActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.geofence);
-		mLocationClient = ((LocationApplication) getApplication()).mLocationClient;
-		mGeofenceClient = ((LocationApplication) getApplication()).mGeofenceClient;
+ 
+		mGeofenceClient = new GeofenceClient(getApplicationContext());
 		
 		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,getIDList);
 		geoID = (EditText) findViewById(R.id.geoid);
@@ -55,7 +55,7 @@ public class GeoFenceActivity extends Activity {
 		removeGeoFence = (Button) findViewById(R.id.removefence);
 		logMsg = (TextView) findViewById(R.id.geofencelog);
 		geoFenceList = (ListView)findViewById(R.id.geolist);
-		((LocationApplication) getApplication()).logMsg = logMsg;
+ 
 		
 		listener = new AddGeofenceListener();
 		geoFenceList.setAdapter(adapter);

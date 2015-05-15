@@ -61,43 +61,7 @@
               
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical" >
-
-                <TextView
-                    android:id="@+id/TextView01"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="坐标系"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
-	<RadioGroup
-		    android:id="@+id/selectCoordinates"
-		    android:layout_width="wrap_content"
-		    android:layout_height="match_parent" >
-
-                <RadioButton
-                    android:id="@+id/radio_gcj02"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="gcj02(国测局加密经纬度坐标)" />
-
-                <RadioButton
-                    android:id="@+id/radio_bd09ll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="bd09ll(百度加密经纬度坐标)" />
-
-                <RadioButton
-                    android:id="@+id/radio_bd09"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="bd09(百度加密墨卡托坐标)" />
-</RadioGroup>
-            </LinearLayout>
+      
 
         </LinearLayout>
 
@@ -133,25 +97,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="2.89"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/geofencelog"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="反地理编码"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-            <CheckBox
-                android:id="@+id/geolocation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=" " />
-        </LinearLayout>
+         
 
     </LinearLayout>
 

@@ -3,7 +3,7 @@
 ##配置工程
 - 高德lbs官网申请key [申请地址](http://lbs.amap.com/console/)
 - 在mainfest进行一下配置
-   1：配置定位所需权限
+   1：配置定位所需权限  
  ``` java  
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -17,14 +17,14 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" /> 
     <uses-permission android:name="android.permission.WRITE_SETTINGS" /> 
 ``` 
-   2：配置所需key
- ``` java   
+   2：配置所需key  
+``` java   
      <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="您申请的key" />
 ```
-   3：配置定位service
- ``` java     
+   3：配置定位service  
+``` java     
      <service 
             android:process=":remote"
             android:name="com.amap.apis.locationservice.LocationBackGroundService">

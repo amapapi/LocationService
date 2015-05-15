@@ -79,6 +79,7 @@ public class LocationBackGroundService extends Service implements
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message message) {
 			switch (message.what) {
+			//开启定位
 			case START_LOCATE:
 				Bundle bundle = message.getData();
 				String locationType = bundle.getString(TYPE_KEY);
@@ -86,18 +87,21 @@ public class LocationBackGroundService extends Service implements
 				float distance = bundle.getFloat(DISTANCE_KEY);
 				boolean isGPS = bundle.getBoolean(GPS_KEY);
 				Messenger clientMessenger = message.replyTo;
+				//可能同时有多个Client同时进行定位，支持多个都可以收到回调
 				if (!mClientMessengers.contains(clientMessenger)) {
 					mClientMessengers.add(clientMessenger);
 				}
 				startLocate(locationType, timeInterval, distance, isGPS);
 				break;
+			//停止定位	
 			case STOP_LOCATE:
 				Messenger stopClientMessenger = message.replyTo;
-				
+				//删掉对应的client
 				mClientMessengers.remove(stopClientMessenger);		
 				stopLocate(stopClientMessenger);
 				
 				break;
+				//添加地理围栏
 			case ADD_GEOFENCE:
 				Bundle geoFenceBundle = message.getData();
 				double latitude = geoFenceBundle.getDouble(LATITUDE_KEY);
@@ -111,6 +115,7 @@ public class LocationBackGroundService extends Service implements
 						geofenceID);
 
 				break;
+				//删除地理围栏
 			case REMOVE_GEOFENCE:
 				Bundle removeBundle = message.getData();
 				String[] geofenceIDs = removeBundle
@@ -125,8 +130,10 @@ public class LocationBackGroundService extends Service implements
 
 	Messenger mMessenger = new Messenger(mHandler);
 
+	//开启定位的方法
 	private void startLocate(String locationType, long interval,
 			float distance, boolean isGPS) {
+		//如果是尚未启动定位则启动，因此如果已经启动定位情况下，则设置的参数会以第一个设置的为准
 		if(mIsFirstStart)
 		{
 		LocationManagerProxy.getInstance(getApplicationContext()).setGpsEnable(
@@ -139,12 +146,13 @@ public class LocationBackGroundService extends Service implements
 		
 	}
 
+	//停止定位
 	private void stopLocate(Messenger messenger) {
-		Log.i("yiyi.qi", "-------stopLocate-------"+mClientMessengers.size());
+		//如果定位的client都停止了，则停止定位逻辑，之后重新设置的定位参数也将会生效
 		if (mClientMessengers.size() == 0) {
 			LocationManagerProxy.getInstance(getApplicationContext())
 					.removeUpdates(this);
-			 
+			mIsFirstStart=true;
 //				Message msg=new Message();
 //				msg.what=ON_STOP;
 //				try {
@@ -157,6 +165,7 @@ public class LocationBackGroundService extends Service implements
 		}
 	}
 
+	//添加地理围栏
 	private void addGeoFence(double latitude, double longitude, float distance,
 			long duration, String geofenceID) {
 
@@ -198,6 +207,7 @@ public class LocationBackGroundService extends Service implements
 
 	}
 
+	//删除地理围栏
 	private void removeGeofence(String[] geofenceIDs) {
 		List<String> removeIDs = new ArrayList<String>();
 		for (String geoFenceID : geofenceIDs) {
@@ -225,18 +235,10 @@ public class LocationBackGroundService extends Service implements
 	@Override
 	public IBinder onBind(Intent intent) {
 		 
-		 
 		return mMessenger.getBinder();
-	
-
-	
 	}
 
-	public boolean onUnBind(Intent intent) {
- 
 	 
-		return false;
-	}
 
 	@Override
 	public void onLocationChanged(Location location) {
@@ -274,7 +276,6 @@ public class LocationBackGroundService extends Service implements
 						clientMessenger.send(message);
 					}
 					
-					Log.i("yiyi.qi", "size is "+mClientMessengers.size());
 				
 				} catch (RemoteException e) {
 					e.printStackTrace();

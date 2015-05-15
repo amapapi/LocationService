@@ -1,7 +1,7 @@
 package com.amap.apis.locationservice;
 
 public class GDGeofence {
-	  public static final int RADIUS_TYPE_SMALL = 1;
+	public static final int RADIUS_TYPE_SMALL = 1;
 	double mLatitude;
 	double mLongitude;
 	int mRadius;
@@ -12,13 +12,12 @@ public class GDGeofence {
 		return mGeoFenceId;
 	}
 
-	private GDGeofence(double latitude, double longitude, int radius,
-			long intervalTime, String geofenceId) {
-		mLatitude = latitude;
-		mLongitude = longitude;
-		mRadius = radius;
-		mIntervalTime = intervalTime;
-		mGeoFenceId = geofenceId;
+	private GDGeofence(Builder builder) {
+		mLatitude = builder.mLatitude;
+		mLongitude =  builder.mLongitude;
+		mRadius =  builder.mRadius;
+		mIntervalTime = builder.mIntervalTime;
+		mGeoFenceId = builder.mGeofenceId;
 	}
 
 	public static class Builder {
@@ -32,13 +31,17 @@ public class GDGeofence {
 
 		private String mGeofenceId;
 
-		// 创建围栏
+		
+		/**
+		 * 创建围栏  
+		 */
 		public GDGeofence build() {
-			return new GDGeofence(mLatitude, mLongitude, mRadius, mIntervalTime,
-					mGeofenceId);
+			return new GDGeofence(this);
 		}
 
-		// 设置围栏的中心点坐标和半径
+		/**
+		 * 设置围栏的中心点坐标和半径
+		 */
 	public	GDGeofence.Builder setCircularRegion(double longitude, double latitude,
 				int radius) {
 			mLongitude = longitude;
@@ -46,19 +49,18 @@ public class GDGeofence {
 			mRadius = radius;
 			return this;
 		}
-
-		// // 设置坐标类型
-		// GDGeofence.Builder setCoordType(java.lang.String coordType) {
-		// return null;
-		// }
-
-		// 设置围栏的有效时间
-		public GDGeofence.Builder setExpirationDruation(long intervalTime) {
+ 
+	/**
+	 * 设置围栏的有效时间
+	 */
+	public GDGeofence.Builder setExpirationDruation(long intervalTime) {
 			mIntervalTime = intervalTime;
 			return this;
 		}
 
-		// 设置围栏名称
+	/**
+	 * 设置围栏唯一id
+	 */
 		public GDGeofence.Builder setGeofenceId(java.lang.String geofenceId) {
 			mGeofenceId = geofenceId;
 			return this;

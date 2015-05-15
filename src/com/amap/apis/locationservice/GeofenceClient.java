@@ -16,6 +16,9 @@ import android.os.RemoteException;
 import com.amap.api.location.LocationProviderProxy;
 
 
+/**  
+ * 地理围栏使用入口
+ */
 public class GeofenceClient {
 
 	private Context mContext;
@@ -40,6 +43,191 @@ public class GeofenceClient {
 
 	private IntentFilter mIntentFilter = new IntentFilter();
 
+	
+	/**  
+	 * 地理围栏构造函数
+	 */  
+	public GeofenceClient(Context context) {
+		mContext = context;
+		if (Looper.myLooper() == null) {
+			mGeofenceHandler = new GeofenceHandler(Looper.getMainLooper(), this);
+		} else {
+			mGeofenceHandler = new GeofenceHandler(this);
+		}
+		mGeoFenceReceiver = new GeoFenceReceiver(this);
+		mServiceConnection = new ClientServiceConnection(this);
+
+		Intent intent = new Intent(mContext, LocationBackGroundService.class);
+
+		mContext.bindService(intent, mServiceConnection,
+				Context.BIND_AUTO_CREATE);
+
+		mClientMessenger = new Messenger(mGeofenceHandler);
+
+	}
+
+	 
+	/**  
+	 * 是否已经开始定位，围栏的扫描服务是否生效
+	 */
+	public boolean isStarted() {
+		return mIsStarted;
+	}
+
+
+	/**
+	 * 开启定位，开启围栏扫描服务  
+	 */
+	public void start() {
+		if (!mIsStarted) {
+			mIsStarted = true;
+			mContext.registerReceiver(mGeoFenceReceiver, mIntentFilter);
+
+		}
+		if (mServerMessenger != null) {
+			startLocate();
+		}
+
+	}
+
+
+	/** 
+	 * 停止定位， 停止围栏扫描服务
+	 */
+	public void stop() {
+		if (mIsStarted) {
+			mIsStarted = false;
+			Message message = new Message();
+			message.what = LocationBackGroundService.STOP_LOCATE;
+			try {
+				mServerMessenger.send(message);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			mContext.unbindService(mServiceConnection);
+			mContext.unregisterReceiver(mGeoFenceReceiver);
+		}
+	}
+	/**  
+	 * 添加地理围栏
+	 */
+	public void addGDGeofence(GDGeofence geofence,
+			GeofenceClient.OnAddGDGeofencesResultListener listener) {
+		mIntentFilter
+				.addAction(LocationBackGroundService.GEOFENCE_BROADCAST_ACTION
+						+ geofence.mGeoFenceId);
+		mContext.registerReceiver(mGeoFenceReceiver, mIntentFilter);
+		mOnAddGDGeofenceResultListener = listener;
+		Message message = new Message();
+		Bundle data = new Bundle();
+		data.putDouble(LocationBackGroundService.LATITUDE_KEY,
+				geofence.mLatitude);
+		data.putDouble(LocationBackGroundService.LONGITUDE_KEY,
+				geofence.mLongitude);
+		data.putFloat(LocationBackGroundService.GEOFENCE_DISTANCE_KEY,
+				geofence.mRadius);
+		data.putLong(LocationBackGroundService.DURATION_KEY,
+				geofence.mIntervalTime);
+		data.putString(LocationBackGroundService.GEOFENCEID_KEY,
+				geofence.mGeoFenceId);
+		message.replyTo = mClientMessenger;
+		message.what = LocationBackGroundService.ADD_GEOFENCE;
+		message.setData(data);
+		try {
+			mServerMessenger.send(message);
+			// if (mOnAddGDGeofenceResultListener != null) {
+			// mOnAddGDGeofenceResultListener.onAddGDGeofencesResult(
+			// GDLocationStatusCodes.SUCCESS, "");
+			// }
+		} catch (RemoteException e) {
+			if (mOnAddGDGeofenceResultListener != null) {
+				mOnAddGDGeofenceResultListener.onAddGDGeofencesResult(
+						GDLocationStatusCodes.ERROR, "");
+			}
+			e.printStackTrace();
+
+		}
+	}
+
+	
+		/** 
+		 *  删除地理围栏
+		 */
+		public void removeGDGeofences(
+				java.util.List<java.lang.String> geofenceRequestIds,
+				OnRemoveGDGeofencesResultListener listener) {
+			mOnRemoveGeofenceListener = listener;
+			Message message = new Message();
+			Bundle data = new Bundle();
+			data.putStringArray(
+					LocationBackGroundService.GEOFENCEID_KEY,
+					geofenceRequestIds.toArray(new String[geofenceRequestIds.size()]));
+			message.replyTo = mClientMessenger;
+			message.what = LocationBackGroundService.REMOVE_GEOFENCE;
+			message.setData(data);
+			try {
+				mServerMessenger.send(message);
+			} catch (RemoteException e) {
+
+				e.printStackTrace();
+
+			}
+		}
+
+
+	/**  
+	 * 注册进入围栏的回调接口
+	 */
+	public void registerGeofenceTriggerListener(
+			OnGeofenceTriggerListener onGeofenceTriggerListener) {
+		mOnGeofenceTriggerListener = onGeofenceTriggerListener;
+	}
+
+	public static abstract interface OnGeofenceTriggerListener {
+		public abstract void onGeofenceTrigger(String paramString);
+
+		public abstract void onGeofenceExit(String paramString);
+	}
+
+	public static abstract interface OnAddGDGeofencesResultListener {
+		public abstract void onAddGDGeofencesResult(int paramInt,
+				String paramString);
+	}
+
+	
+	public static abstract interface OnRemoveGDGeofencesResultListener {
+		public abstract void onRemoveGDGeofencesByRequestIdsResult(
+				int paramInt, String[] paramArrayOfString);
+	}
+
+	public void startGeofenceScann() {
+		mContext.registerReceiver(mGeoFenceReceiver, mIntentFilter);
+	}
+	private void startLocate() {
+		Message message = new Message();
+		message.what = LocationBackGroundService.START_LOCATE;
+		Bundle bundle = message.getData();
+		bundle.putString(LocationBackGroundService.TYPE_KEY,
+				LocationProviderProxy.AMapNetwork);
+		// 可以根据业务需求修改时间长短
+		bundle.putLong(LocationBackGroundService.INTERVAL_KEY, 5 * 1000);
+		// 距离
+		bundle.putFloat(LocationBackGroundService.DISTANCE_KEY, 0);
+		// 是否使用gps
+		bundle.putBoolean(LocationBackGroundService.GPS_KEY, true);
+		message.setData(bundle);
+
+		try {
+			mServerMessenger.send(message);
+
+		} catch (RemoteException e) {
+
+			e.printStackTrace();
+
+		}
+	}
+
+	
 	private static class GeofenceHandler extends Handler {
 		GeofenceClient mGeofenceClient;
 
@@ -155,173 +343,7 @@ public class GeofenceClient {
 
 		}
 
-	}
-
-	// 地理围栏构造函数
-	public GeofenceClient(Context context) {
-		mContext = context;
-		if (Looper.myLooper() == null) {
-			mGeofenceHandler = new GeofenceHandler(Looper.getMainLooper(), this);
-		} else {
-			mGeofenceHandler = new GeofenceHandler(this);
-		}
-		mGeoFenceReceiver = new GeoFenceReceiver(this);
-		mServiceConnection = new ClientServiceConnection(this);
-
-		Intent intent = new Intent(mContext, LocationBackGroundService.class);
-
-		mContext.bindService(intent, mServiceConnection,
-				Context.BIND_AUTO_CREATE);
-
-		mClientMessenger = new Messenger(mGeofenceHandler);
-
-	}
-
-	// 围栏扫描服务是否开启
-	public boolean isStarted() {
-		return mIsStarted;
-	}
-
-	private void startLocate() {
-		Message message = new Message();
-		message.what = LocationBackGroundService.START_LOCATE;
-		Bundle bundle = message.getData();
-		bundle.putString(LocationBackGroundService.TYPE_KEY,
-				LocationProviderProxy.AMapNetwork);
-		// 可以根据业务需求修改时间长短
-		bundle.putLong(LocationBackGroundService.INTERVAL_KEY, 5 * 1000);
-		// 距离
-		bundle.putFloat(LocationBackGroundService.DISTANCE_KEY, 0);
-		// 是否使用gps
-		bundle.putBoolean(LocationBackGroundService.GPS_KEY, true);
-		message.setData(bundle);
-
-		try {
-			mServerMessenger.send(message);
-
-		} catch (RemoteException e) {
-
-			e.printStackTrace();
-
-		}
-	}
-
-	// 开启围栏扫描服务
-	public void start() {
-		if (!mIsStarted) {
-			mIsStarted = true;
-			mContext.registerReceiver(mGeoFenceReceiver, mIntentFilter);
-
-		}
-		if (mServerMessenger != null) {
-			startLocate();
-		}
-
-	}
-
-	// 停止围栏扫描服务
-	public void stop() {
-		if (mIsStarted) {
-			mIsStarted = false;
-			Message message = new Message();
-			message.what = LocationBackGroundService.STOP_LOCATE;
-			try {
-				mServerMessenger.send(message);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-			mContext.unbindService(mServiceConnection);
-			mContext.unregisterReceiver(mGeoFenceReceiver);
-		}
-	}
-
-	// 添加围栏
-
-	public void addGDGeofence(GDGeofence geofence,
-			GeofenceClient.OnAddGDGeofencesResultListener listener) {
-		mIntentFilter
-				.addAction(LocationBackGroundService.GEOFENCE_BROADCAST_ACTION
-						+ geofence.mGeoFenceId);
-		mContext.registerReceiver(mGeoFenceReceiver, mIntentFilter);
-		mOnAddGDGeofenceResultListener = listener;
-		Message message = new Message();
-		Bundle data = new Bundle();
-		data.putDouble(LocationBackGroundService.LATITUDE_KEY,
-				geofence.mLatitude);
-		data.putDouble(LocationBackGroundService.LONGITUDE_KEY,
-				geofence.mLongitude);
-		data.putFloat(LocationBackGroundService.GEOFENCE_DISTANCE_KEY,
-				geofence.mRadius);
-		data.putLong(LocationBackGroundService.DURATION_KEY,
-				geofence.mIntervalTime);
-		data.putString(LocationBackGroundService.GEOFENCEID_KEY,
-				geofence.mGeoFenceId);
-		message.replyTo = mClientMessenger;
-		message.what = LocationBackGroundService.ADD_GEOFENCE;
-		message.setData(data);
-		try {
-			mServerMessenger.send(message);
-			// if (mOnAddGDGeofenceResultListener != null) {
-			// mOnAddGDGeofenceResultListener.onAddGDGeofencesResult(
-			// GDLocationStatusCodes.SUCCESS, "");
-			// }
-		} catch (RemoteException e) {
-			if (mOnAddGDGeofenceResultListener != null) {
-				mOnAddGDGeofenceResultListener.onAddGDGeofencesResult(
-						GDLocationStatusCodes.ERROR, "");
-			}
-			e.printStackTrace();
-
-		}
-	}
-
-	// 注册进入围栏的回调接口
-	public void registerGeofenceTriggerListener(
-			OnGeofenceTriggerListener onGeofenceTriggerListener) {
-		mOnGeofenceTriggerListener = onGeofenceTriggerListener;
-	}
-
-	public static abstract interface OnGeofenceTriggerListener {
-		public abstract void onGeofenceTrigger(String paramString);
-
-		public abstract void onGeofenceExit(String paramString);
-	}
-
-	public static abstract interface OnAddGDGeofencesResultListener {
-		public abstract void onAddGDGeofencesResult(int paramInt,
-				String paramString);
-	}
-
-	// 删除围栏
-	public void removeGDGeofences(
-			java.util.List<java.lang.String> geofenceRequestIds,
-			OnRemoveGDGeofencesResultListener listener) {
-		mOnRemoveGeofenceListener = listener;
-		Message message = new Message();
-		Bundle data = new Bundle();
-		data.putStringArray(
-				LocationBackGroundService.GEOFENCEID_KEY,
-				geofenceRequestIds.toArray(new String[geofenceRequestIds.size()]));
-		message.replyTo = mClientMessenger;
-		message.what = LocationBackGroundService.REMOVE_GEOFENCE;
-		message.setData(data);
-		try {
-			mServerMessenger.send(message);
-		} catch (RemoteException e) {
-
-			e.printStackTrace();
-
-		}
-	}
-
-	public static abstract interface OnRemoveGDGeofencesResultListener {
-		public abstract void onRemoveGDGeofencesByRequestIdsResult(
-				int paramInt, String[] paramArrayOfString);
-	}
-
-	public void startGeofenceScann() {
-		mContext.registerReceiver(mGeoFenceReceiver, mIntentFilter);
-	}
+	}	
 
 	// -----------------------修改分割线----------------------------
 
@@ -329,6 +351,6 @@ public class GeofenceClient {
 	void setInterval(long interval) {
 	}
 
-	// 当地理围栏创建后需开启围栏相关的服务
+
 
 }

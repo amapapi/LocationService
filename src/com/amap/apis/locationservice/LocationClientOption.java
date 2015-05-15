@@ -13,30 +13,29 @@ public class LocationClientOption {
 	private static final String device_sensors = "Device_Sensors";
 
 	private boolean mIsOpenGPS = false;
-
-//	private boolean mIsNeedAddress = false;
-//
-//	private boolean mIsNeedDeviceDirect = false;
-
+	
 	private LocationMode mLocationMode = LocationMode.Battery_Saving;
 
 	private int mTimeInterval = 2000;
 
-	// 是否打开gps进行定位
+	/**  
+	 * 是否打开gps进行定位
+	 */
 	public void setOpenGps(boolean openGPS) {
 		mIsOpenGPS = openGPS;
 	}
-
-	// 是否打开gps进行定位
+ 
+	/**  
+	 * 是否打开gps进行定位
+	 */
 	public boolean isOpenGps() {
 
 		return mIsOpenGPS;
 	}
 
-	
-	
-
-	// 设置定位模式
+	/**  
+	 * 设置定位模式
+	 */
 	public void setLocationMode(LocationMode locationMode) {
 		mLocationMode = locationMode;
 	}
@@ -46,14 +45,16 @@ public class LocationClientOption {
 		return mLocationMode;
 	}
 
-	
-
-	// 设置定位时间间隔，单位是毫秒
+	/**  
+	 * 设置定位时间间隔，单位是毫秒
+	 */
 	public void setScanSpan(int timeInterval) {
 		mTimeInterval = timeInterval;
 	}
 
-	// 获取定位时间间隔，单位是毫秒
+	/**  
+	 * 获取定位时间间隔，单位是毫秒
+	 */
 	public int getScanSpan() {
 		return mTimeInterval;
 	}
@@ -128,70 +129,6 @@ public class LocationClientOption {
 	}
 	 
 	
-	// ------------------------------------修改分割线---------------------------------
-
-//	 void setIsNeedAddress(boolean isNeed) {
-//		mIsNeedAddress = isNeed;
-//	}
-//	// 在网络定位时，是否需要设备方向
-//		public void setNeedDeviceDirect(boolean isNeedDeviceDirect) {
-//			mIsNeedDeviceDirect = isNeedDeviceDirect;
-//		}
-
-
-
-
-	public String getAddrType() {
-		return null;
-	}
-
-	public boolean isLocationNotify() {
-		return false;
-	}
-
-	// 设置是否进行异常捕捉
-	  void setIgnoreCacheException(boolean cacheException) {
-
-	}
-
-	// 设置是否退出定位进程
-	  void setIgnoreKillProcess(boolean killProcess) {
-
-	}
-
-	  void setLocationNotify(boolean notify) {
-
-	}
-
-	//
-	// public int getTimeOut() {
-	//
-	// return 0;
-	// }
-	// //
-	// public void setTimeOut(int timeOut) {
-	//
-	// }
-
-	// 不同坐标系不用考虑
-
-	//
-	// java.lang.String getCoorType() {
-	//
-	// return null;
-	// }
-	//
-	// // 设置坐标类型
-	// public void setCoorType(String coorType) {
-	//
-	// }
-
-	// // 设置Prod字段值
-	// public void setProdName(java.lang.String prodName) {
-	//
-	// }
-	// public String getProdName() {
-	// return null;
-	// }
+ 
 
 }

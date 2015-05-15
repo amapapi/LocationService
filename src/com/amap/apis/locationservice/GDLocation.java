@@ -20,11 +20,9 @@ import android.text.TextUtils;
 import android.text.format.DateFormat;
 
 public class GDLocation implements Parcelable {
-	
-	
-	  public static final int TypeGpsLocation = 61;	 
-	  public static final int TypeNetWorkLocation = 161;
 
+	public static final int TypeGpsLocation = 61;
+	public static final int TypeNetWorkLocation = 161;
 
 	private String mAddress;
 
@@ -47,11 +45,11 @@ public class GDLocation implements Parcelable {
 	private String mCityCode;
 
 	private String mProvince;
-	
+
 	private String mTime;
-	
+
 	private String mLocationType;
-	
+
 	private String mFloor;
 
 	public GDLocation() {
@@ -70,37 +68,51 @@ public class GDLocation implements Parcelable {
 		mCity = amapLocation.getCity();
 		mCityCode = amapLocation.getCityCode();
 		mProvince = amapLocation.getProvince();
-		long time=amapLocation.getTime();
+		long time = amapLocation.getTime();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date(time);
-		mTime=  df.format(date);
-		mLocationType=amapLocation.getProvider();
-		mFloor=amapLocation.getFloor();
-	
-	
+		mTime = df.format(date);
+		mLocationType = amapLocation.getProvider();
+		mFloor = amapLocation.getFloor();
+
 	}
 
-	// 获取详细地址信息
+ 
+	/**
+	 *获取详细地址信息
+	 * */
 	public String getAddrStr() {
 		return mAddress;
 	}
 
-	// 获取区/县信息
+	 
+	/**
+	 *获取区/县信息
+	 * */
 	public String getDistrict() {
 		return mDistrict;
 	}
 
-	// 获取纬度坐标
+ 
+	/**
+	 *获取纬度坐标
+	 * */
 	public double getLatitude() {
 		return mLatitude;
 	}
 
-	// 获取经度坐标
+ 
+	/**
+	 *获取经度坐标
+	 * */
 	public double getLongitude() {
 		return mLongtitude;
 	}
 
-	// 获取定位精度
+	 
+	/**
+	 *获取定位精度
+	 * */
 	public float getRadius() {
 		return mRadius;
 	}
@@ -115,7 +127,10 @@ public class GDLocation implements Parcelable {
 
 	}
 
-	// 获取速度，仅gps定位结果时有速度信息
+	 
+	/**
+	 *获取速度，仅gps定位结果时有速度信息
+	 * */
 	public float getSpeed() {
 		return mSpeed;
 	}
@@ -125,13 +140,19 @@ public class GDLocation implements Parcelable {
 
 	}
 
-	// 获取城市
+	 
+	/**
+	 *获取城市
+	 * */
 	public String getCity() {
 		return mCity;
 
 	}
 
-	// 获取街道信息
+ 
+	/**
+	 *获取街道信息
+	 * */
 	public String getStreet() {
 		return mStreet;
 	}
@@ -145,7 +166,9 @@ public class GDLocation implements Parcelable {
 		mAddress = address;
 	}
 
-	// 获取省份
+	/**
+	 * 获取省份
+	 * */
 	public String getProvince() {
 		return mProvince;
 	}
@@ -159,7 +182,9 @@ public class GDLocation implements Parcelable {
 		mAltitude = altitude;
 	}
 
-	// 获取高度信息，目前没有实现
+	/**
+	 * 获取高度信息，目前没有实现
+	 * */
 	public double getAltitude() {
 		return mAltitude;
 	}
@@ -196,25 +221,13 @@ public class GDLocation implements Parcelable {
 		mCity = in.readString();
 		mCityCode = in.readString();
 		mProvince = in.readString();
-		mTime=in.readString();
-		mLocationType=in.readString();
-		mFloor=in.readString();
+		mTime = in.readString();
+		mLocationType = in.readString();
+		mFloor = in.readString();
 
 	}
 
 	public void writeToParcel(Parcel dest, int arg1) {
-		// private String mAddress;
-		// private String mDistrict;
-		// private double mLatitude;
-		// private double mLongtitude;
-		// private double mAltitude;
-		// private float mRadius;
-		// private float mSpeed;
-		// private String mStreet;
-		// private String mCity;
-		// private String mCityCode;
-		// private String mProvince;
-
 		dest.writeString(mAddress);
 		dest.writeString(mDistrict);
 		dest.writeDouble(mLatitude);
@@ -232,126 +245,42 @@ public class GDLocation implements Parcelable {
 
 	}
 
-	// 是否有地址信息
+	/**
+	 * 是否有地址信息
+	 * */
 	public boolean hasAddr() {
-			return !TextUtils.isEmpty(mAddress);
-		}
-	
-	
-	// server返回的当前定位时间
-     public String getTime() {
+		return !TextUtils.isEmpty(mAddress);
+	}
+
+	/**
+	 * server返回的当前定位时间
+	 * */
+	public String getTime() {
 		return mTime;
 	}
-	
-     
-  // 获取定位类型: 参考 定位结果描述 相关的字段
- 	public int getLocType() {
- 		if(mLocationType.equals(LocationManager.GPS_PROVIDER)){
- 			return TypeGpsLocation;
- 		}
- 		else if(!TextUtils.isEmpty(mLocationType)){
- 			return TypeNetWorkLocation;
- 		}
- 		return 0;
- 	}
- 	
- 	public 	void setTime( String time) {
 
- 		mTime=time;
-	}
- 	
- // 获取楼层信息,仅室内定位时有效
- 	public String getFloor() {
- 		return mFloor;
- 	}
- 	
-	// -------------------修改分割线------------------------
-
-	String getAdUrl(String ak) {
-		return null;
-	}
-
-	// 获取所用坐标系，目前没有实现，以locationClientOption里设定的坐标系为准
-	String getCoorType() {
-		return null;
-	}
-
-	// 获取手机当前的方向
-	float getDirection() {
+	/**
+	 * 获取定位类型: 参考 定位结果描述 相关的字段
+	 * */
+	public int getLocType() {
+		if (mLocationType.equals(LocationManager.GPS_PROVIDER)) {
+			return TypeGpsLocation;
+		} else if (!TextUtils.isEmpty(mLocationType)) {
+			return TypeNetWorkLocation;
+		}
 		return 0;
 	}
 
-	
+	public void setTime(String time) {
 
-	
-
-	// /在网络定位结果的情况下，获取网络定位结果是通过基站定位得到的还是通过wifi定位得到的
-	String getNetworkLocationType() {
-		return null;
+		mTime = time;
 	}
 
-	// 获取运营商信息
-	int getOperators() {
-		return 0;
+	/**
+	 * 获取楼层信息,仅室内定位时有效
+	 * */
+	public String getFloor() {
+		return mFloor;
 	}
-
-	// gps定位结果时，获取gps锁定用的卫星数
-	int getSatelliteNumber() {
-		return 0;
-	}
-
-	// 获取街道号码
-	java.lang.String getStreetNumber() {
-		return null;
-	}
-
-
-
-	
-
-	boolean hasAltitude() {
-		return false;
-	}
-
-	boolean hasRadius() {
-		return false;
-	}
-
-	boolean hasSateNumber() {
-		return false;
-	}
-
-	// 是否包含速度信息
-	boolean hasSpeed() {
-		return false;
-	}
-
-	void internalSet(int i, java.lang.String data) {
-
-	}
-
-	// 仅在getloctype == TypeOffLineLocationNetworkFail起作用。
-	boolean isCellChangeFlag() {
-		return false;
-	}
-
-	void setCoorType(java.lang.String coorType) {
-
-	}
-
-	// 设置手机当前的方向
-	void setDirection(float direction) {
-
-	}
-
-	void setLocType(int locType) {
-
-	}
-
-	void setSatelliteNumber(int satelliteNumber) {
-
-	}
-
-
 
 }

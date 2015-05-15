@@ -26,8 +26,8 @@ import com.amap.api.location.LocationProviderProxy;
 public class LocationClient {
 
 	private Context mContext;
-    //默认的定位参数
-	private LocationClientOption mLocationClientOption=new LocationClientOption();
+	// 默认的定位参数
+	private LocationClientOption mLocationClientOption = new LocationClientOption();
 
 	private ClientHandler mClientHandler;
 
@@ -82,25 +82,7 @@ public class LocationClient {
 		} else {
 			if (mServerMessenger != null) {
 				// 调用后台service的定位，传递定位的参数
-				Message message = new Message();
-				message.what = LocationBackGroundService.START_LOCATE;
-				Bundle bundle = message.getData();
-				bundle.putString(LocationBackGroundService.TYPE_KEY,
-						mLocationClientOption.getlocationType());
-				bundle.putLong(LocationBackGroundService.INTERVAL_KEY,
-						mLocationClientOption.getScanSpan());
-				bundle.putFloat(LocationBackGroundService.DISTANCE_KEY, 0);
-
-				bundle.putBoolean(LocationBackGroundService.GPS_KEY,
-						mLocationClientOption.isOpenGps());
-				message.setData(bundle);
-				message.replyTo = mClientMessenger;
-				try {
-					mServerMessenger.send(message);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-
-				}
+				startLocate();
 			}
 		}
 	}
@@ -202,28 +184,7 @@ public class LocationClient {
 		public void onServiceConnected(ComponentName name, IBinder service) {
 
 			mLocationClient.mServerMessenger = new Messenger(service);
-			// 第一次binder之后，开启定位
-			Message message = new Message();
-			message.what = LocationBackGroundService.START_LOCATE;
-			Bundle bundle = message.getData();
-			bundle.putString(LocationBackGroundService.TYPE_KEY,
-					mLocationClient.mLocationClientOption.getlocationType());
-
-			bundle.putLong(LocationBackGroundService.INTERVAL_KEY,
-					mLocationClient.mLocationClientOption.getScanSpan());
-			bundle.putFloat(LocationBackGroundService.DISTANCE_KEY, 0);
-
-			bundle.putBoolean(LocationBackGroundService.GPS_KEY,
-					mLocationClient.mLocationClientOption.isOpenGps());
-			message.setData(bundle);
-			message.replyTo = mLocationClient.mClientMessenger;
-			try {
-				mLocationClient.mServerMessenger.send(message);
-			} catch (RemoteException e) {
-
-				e.printStackTrace();
-
-			}
+			mLocationClient.startLocate();
 
 		}
 
@@ -269,6 +230,31 @@ public class LocationClient {
 
 	}
 
+	private void startLocate() {
+		// 第一次binder之后，开启定位
+		Message message = new Message();
+		message.what = LocationBackGroundService.START_LOCATE;
+		Bundle bundle = message.getData();
+		bundle.putString(LocationBackGroundService.TYPE_KEY,
+				mLocationClientOption.getlocationType());
+
+		bundle.putLong(LocationBackGroundService.INTERVAL_KEY,
+				mLocationClientOption.getScanSpan());
+		bundle.putFloat(LocationBackGroundService.DISTANCE_KEY, 0);
+
+		bundle.putBoolean(LocationBackGroundService.GPS_KEY,
+				mLocationClientOption.isOpenGps());
+		message.setData(bundle);
+		message.replyTo = mClientMessenger;
+		try {
+			mServerMessenger.send(message);
+		} catch (RemoteException e) {
+
+			e.printStackTrace();
+
+		}
+	}
+
 	// TODO 需要仔细考虑下是不是 需要同步
 	private synchronized void onLocation(GDLocation gdLocation) {
 		for (GDLocationListener gdLocationListener : mlocationListeners) {
@@ -276,64 +262,5 @@ public class LocationClient {
 		}
 	}
 
-	// -----------------------------修改分割线---------------------------------
-
-	// // 注册位置提醒监听
-	// void registerNotify(GDNotifyListener mNotify) {
-	//
-	// }
-	//
-	// void registerNotifyLocationListener(GDLocationListener listener) {
-	//
-	// }
-	//
-	// // 取消注册的位置提醒监听
-	// void removeNotifyEvent(GDNotifyListener mNotify) {
-	//
-	// }
-	// void requestNotifyLocation() {
-	//
-	// }
-
-	// // 取消定位错误报告, 在notifyError()后，假如想取消错误报告,通过此函数实现。
-	// void cancleError() {
-	//
-	// }
-	//
-	//
-	// // 通知当前定位出现错误,需结合reportError()才能将定位错误上传服务端
-	// boolean notifyError() {
-	// return false;
-	// }
-
-	// 向server通知当前的定位错误,要先通过 notifyError()通知定位sdk记录下出错的定位信息.
-	// int reportErrorWithInfo(com.baidu.location.BDErrorReport err) {
-	//
-	// }
-
-	// 请求定位，异步返回，结果在locationListener中获取.
-	int requestLocation() {
-		return 0;
-	}
-
-	// boolean updateLocation(Location gpslocation) {
-	// return false;
-	// }
-
-	// 离线定位请求，异步返回，结果在locationListener中获取.
-	// int requestOfflineLocation() {
-	// return 0;
-	// }
-	// void setForBaiduMap(boolean flag) {
-	//
-	// }
-	// 设置支持debug模式
-	// void setDebug(boolean debug) {
-	//
-	// }
-
-	// 获取用户设置的KEY及SHA1
-	// java.lang.String getAccessKey() {
-	// return null;
-	// }
+	
 }

@@ -22,7 +22,7 @@ import com.amap.apis.locationservice.GeofenceClient;
 import com.amap.apis.locationservice.GeofenceClient.OnAddGDGeofencesResultListener;
 import com.amap.apis.locationservice.GeofenceClient.OnGeofenceTriggerListener;
 import com.amap.apis.locationservice.GeofenceClient.OnRemoveGDGeofencesResultListener;
-import com.amap.apis.locationservice.LocationClient;
+ 
 import com.amap.location.demo.R;
  
 
@@ -33,7 +33,7 @@ public class GeoFenceActivity extends Activity {
 	private Button addGeoFence, removeGeoFence;
 	private EditText geoID, geoLontitude, geoLatitude, duration;
 	private ListView geoFenceList;
-	private StringBuffer buffer;
+ 
 	private TextView logMsg;
 	private List<String> getIDList = new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
@@ -88,9 +88,9 @@ public class GeoFenceActivity extends Activity {
 				GDGeofence fence = new GDGeofence.Builder().setGeofenceId(geoID.getText().toString()).
 						setCircularRegion(longtitude,latotide, GDGeofence.RADIUS_TYPE_SMALL).
 						setExpirationDruation(10L * (3600 * 1000)).
-					//	setCoordType(GDGeofence.COORD_TYPE_BD09LL).
+					 
 						build();
-				//mGeofenceClient.setInterval(199009999);
+				 
 				mGeofenceClient.addGDGeofence(fence, listener);
 				Toast.makeText(GeoFenceActivity.this, "正在创建围栏...", Toast.LENGTH_SHORT).show();
 			}

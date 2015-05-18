@@ -170,7 +170,7 @@ public class LocationBackGroundService extends Service implements
 			long duration, String geofenceID) {
 
 		if (mGeofences.containsKey(geofenceID)) {
-			Message message = new Message();
+			Message message =Message.obtain();
 			message.what = ADD_GEOFENCE;
 			Bundle data = new Bundle();
 			data.putString(GEOFENCEID_KEY, geofenceID);
@@ -193,7 +193,7 @@ public class LocationBackGroundService extends Service implements
 						peddingIntent);
 		mGeofences.put(geofenceID, peddingIntent);
 
-		Message message = new Message();
+		Message message = Message.obtain();
 		message.what = ADD_GEOFENCE;
 		Bundle data = new Bundle();
 		data.putString(GEOFENCEID_KEY, geofenceID);
@@ -218,7 +218,7 @@ public class LocationBackGroundService extends Service implements
 				removeIDs.add(geoFenceID);
 			}
 		}
-		Message message = new Message();
+		Message message = Message.obtain();
 		message.what = REMOVE_GEOFENCE;
 		Bundle data = new Bundle();
 		data.putStringArray(GEOFENCEID_KEY,
@@ -266,7 +266,7 @@ public class LocationBackGroundService extends Service implements
 				&& amapLocation.getAMapException().getErrorCode() == 0) {
 			GDLocation gdLocation = new GDLocation();
 			gdLocation.setAMapLocaion(amapLocation);	 
-				Message message = new Message();
+				Message message =  Message.obtain();
 				message.what=ON_LOCATION;
 				Bundle bundle = new Bundle();
 				bundle.putParcelable(LOCATION_KEY, gdLocation);

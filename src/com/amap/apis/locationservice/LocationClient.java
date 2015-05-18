@@ -93,7 +93,7 @@ public class LocationClient {
 	public void stop() {
 		if (mIsStarted) {
 			mIsStarted = false;
-			Message message = new Message();
+			Message message = Message.obtain();
 			message.what = LocationBackGroundService.STOP_LOCATE;
 			message.replyTo = mClientMessenger;
 			try {
@@ -232,7 +232,7 @@ public class LocationClient {
 
 	private void startLocate() {
 		// 第一次binder之后，开启定位
-		Message message = new Message();
+		Message message =  Message.obtain();
 		message.what = LocationBackGroundService.START_LOCATE;
 		Bundle bundle = message.getData();
 		bundle.putString(LocationBackGroundService.TYPE_KEY,

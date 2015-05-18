@@ -97,7 +97,7 @@ public class GeofenceClient {
 	public void stop() {
 		if (mIsStarted) {
 			mIsStarted = false;
-			Message message = new Message();
+			Message message =Message.obtain();
 			message.what = LocationBackGroundService.STOP_LOCATE;
 			try {
 				mServerMessenger.send(message);
@@ -118,7 +118,7 @@ public class GeofenceClient {
 						+ geofence.mGeoFenceId);
 		mContext.registerReceiver(mGeoFenceReceiver, mIntentFilter);
 		mOnAddGDGeofenceResultListener = listener;
-		Message message = new Message();
+		Message message = Message.obtain();
 		Bundle data = new Bundle();
 		data.putDouble(LocationBackGroundService.LATITUDE_KEY,
 				geofence.mLatitude);
@@ -157,7 +157,7 @@ public class GeofenceClient {
 				java.util.List<java.lang.String> geofenceRequestIds,
 				OnRemoveGDGeofencesResultListener listener) {
 			mOnRemoveGeofenceListener = listener;
-			Message message = new Message();
+			Message message =  Message.obtain();
 			Bundle data = new Bundle();
 			data.putStringArray(
 					LocationBackGroundService.GEOFENCEID_KEY,
@@ -204,7 +204,7 @@ public class GeofenceClient {
 		mContext.registerReceiver(mGeoFenceReceiver, mIntentFilter);
 	}
 	private void startLocate() {
-		Message message = new Message();
+		Message message = Message.obtain();
 		message.what = LocationBackGroundService.START_LOCATE;
 		Bundle bundle = message.getData();
 		bundle.putString(LocationBackGroundService.TYPE_KEY,

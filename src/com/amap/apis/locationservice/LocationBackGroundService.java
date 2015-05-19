@@ -63,6 +63,8 @@ public class LocationBackGroundService extends Service implements
 	public static final String GEOFENCE_BROADCAST_ACTION = "geofencebroadcast:";
 
 	public static final String GEOFENCE_ADDSTATUS_KEY = "geofenceaddstatus";
+	
+	public static final String KILL_PROCESS_KEY="kill_process";
 
 	private ConcurrentHashMap<String, PendingIntent> mGeofences = new ConcurrentHashMap<String, PendingIntent>();
 
@@ -73,7 +75,7 @@ public class LocationBackGroundService extends Service implements
 	private Messenger mGeofenceClientMessenger;
 	
 	private boolean mIsFirstStart=true;
-	
+	private boolean mIsKillProcess=true;
  
 
 	private Handler mHandler = new Handler() {
@@ -86,6 +88,7 @@ public class LocationBackGroundService extends Service implements
 				long timeInterval = bundle.getLong(INTERVAL_KEY);
 				float distance = bundle.getFloat(DISTANCE_KEY);
 				boolean isGPS = bundle.getBoolean(GPS_KEY);
+				  mIsKillProcess=bundle.getBoolean(KILL_PROCESS_KEY, true);
 				Messenger clientMessenger = message.replyTo;
 				//可能同时有多个Client同时进行定位，支持多个都可以收到回调
 				if (!mClientMessengers.contains(clientMessenger)) {
@@ -292,6 +295,9 @@ public class LocationBackGroundService extends Service implements
 		super.onDestroy();
 		Log.i("yiyi.qi", "-------service destroy-------");
 		LocationManagerProxy.getInstance(getApplicationContext()).destroy();
+		if(mIsKillProcess){
+			System.exit(0);
+		}
 
 	}
 

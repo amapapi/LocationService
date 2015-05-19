@@ -89,7 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="1000"
+                android:hint="2000"
                 android:inputType="number" >
 
                 <requestFocus />

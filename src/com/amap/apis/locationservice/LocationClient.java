@@ -244,6 +244,10 @@ public class LocationClient {
 
 		bundle.putBoolean(LocationBackGroundService.GPS_KEY,
 				mLocationClientOption.isOpenGps());
+		bundle.putBoolean(LocationBackGroundService.KILL_PROCESS_KEY, 
+				mLocationClientOption.mIsKillProcess
+				);
+		
 		message.setData(bundle);
 		message.replyTo = mClientMessenger;
 		try {

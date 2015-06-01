@@ -12,17 +12,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.amap.api.location.AMapLocation;
+import com.amap.api.location.LocationProviderProxy;
 
 import android.location.LocationManager;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 public class GDLocation implements Parcelable {
 
 	public static final int TypeGpsLocation = 61;
 	public static final int TypeNetWorkLocation = 161;
+
+	//定位错误标识码
+    public static final int TypeServerError = 167;
 
 	private String mAddress;
 
@@ -57,6 +62,9 @@ public class GDLocation implements Parcelable {
 	}
 
 	void setAMapLocaion(AMapLocation amapLocation) {
+		if(amapLocation.getAMapException()!=null
+				&&amapLocation.getAMapException().getErrorCode()==0)
+		{
 		mAddress = amapLocation.getAddress();
 		mDistrict = amapLocation.getDistrict();
 		mLatitude = amapLocation.getLatitude();
@@ -74,6 +82,28 @@ public class GDLocation implements Parcelable {
 		mTime = df.format(date);
 		mLocationType = amapLocation.getProvider();
 		mFloor = amapLocation.getFloor();
+		}
+		else{
+			mAddress = amapLocation.getAddress();
+			mDistrict = amapLocation.getDistrict();
+			mLatitude = amapLocation.getLatitude();
+			mLongtitude = amapLocation.getLongitude();
+			mAltitude = amapLocation.getAltitude();
+			mRadius = amapLocation.getAccuracy();
+			mSpeed = amapLocation.getSpeed();
+			mStreet = amapLocation.getStreet();
+			mCity = amapLocation.getCity();
+			mCityCode = amapLocation.getCityCode();
+			mProvince = amapLocation.getProvince();
+			long time = amapLocation.getTime();
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = new Date(time);
+			mTime = df.format(date);
+			 mLocationType="TypeServerError";;
+			mFloor = amapLocation.getFloor();
+			Log.i("location", "error code "+amapLocation.getAMapException().getErrorCode());
+			
+		}
 
 	}
 
@@ -263,10 +293,17 @@ public class GDLocation implements Parcelable {
 	 * 获取定位类型: 参考 定位结果描述 相关的字段
 	 * */
 	public int getLocType() {
-		if (mLocationType.equals(LocationManager.GPS_PROVIDER)) {
+		if (LocationManager.GPS_PROVIDER.equals(mLocationType)) {
 			return TypeGpsLocation;
-		} else if (!TextUtils.isEmpty(mLocationType)) {
+		} 
+		
+		else if (LocationProviderProxy.AMapNetwork.equals(mLocationType)
+				||LocationManager.NETWORK_PROVIDER.equals(mLocationType)
+				) {
 			return TypeNetWorkLocation;
+		}
+		else if("TypeServerError".equals(mLocationType)){
+			return TypeServerError;
 		}
 		return 0;
 	}

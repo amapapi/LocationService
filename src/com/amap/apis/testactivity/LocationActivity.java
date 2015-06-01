@@ -38,7 +38,7 @@ public class LocationActivity extends Activity {
 			StringBuffer sb = new StringBuffer(256);
 			sb.append("time : ");
 			sb.append(location.getTime());
-			sb.append("\nloctype : ");
+			sb.append("\nloctype or error code : ");
 			sb.append(location.getLocType());
 			sb.append("\nlatitude : ");
 			sb.append(location.getLatitude());

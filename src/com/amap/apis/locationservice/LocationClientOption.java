@@ -17,6 +17,8 @@ public class LocationClientOption {
 	private LocationMode mLocationMode = LocationMode.Battery_Saving;
 
 	private int mTimeInterval = 2000;
+	
+	boolean mIsKillProcess=true;
 
 	/**  
 	 * 是否打开gps进行定位
@@ -80,6 +82,13 @@ public class LocationClientOption {
 
 	}
 
+	 /**
+	  * 设置是否退出定位进程
+	  * */
+	 public void setIgnoreKillProcess(boolean isKillProcess)
+	  {
+	    this.mIsKillProcess = isKillProcess;
+	  }
 	String getlocationType() {
 		String locationType = LocationProviderProxy.AMapNetwork;
 		switch (mLocationMode) {

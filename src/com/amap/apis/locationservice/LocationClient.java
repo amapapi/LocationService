@@ -93,7 +93,7 @@ public class LocationClient {
 	public void stop() {
 		if (mIsStarted) {
 			mIsStarted = false;
-			Message message = new Message();
+			Message message = Message.obtain();
 			message.what = LocationBackGroundService.STOP_LOCATE;
 			message.replyTo = mClientMessenger;
 			try {
@@ -232,7 +232,7 @@ public class LocationClient {
 
 	private void startLocate() {
 		// 第一次binder之后，开启定位
-		Message message = new Message();
+		Message message =  Message.obtain();
 		message.what = LocationBackGroundService.START_LOCATE;
 		Bundle bundle = message.getData();
 		bundle.putString(LocationBackGroundService.TYPE_KEY,
@@ -244,6 +244,10 @@ public class LocationClient {
 
 		bundle.putBoolean(LocationBackGroundService.GPS_KEY,
 				mLocationClientOption.isOpenGps());
+		bundle.putBoolean(LocationBackGroundService.KILL_PROCESS_KEY, 
+				mLocationClientOption.mIsKillProcess
+				);
+		
 		message.setData(bundle);
 		message.replyTo = mClientMessenger;
 		try {
